@@ -2,7 +2,7 @@
 [HaGRID main repo](https://github.com/hukenovs/hagrid)
 
 ## Overview
-This repository contains the source code of models used in [HaGRID](https://github.com/hukenovs/hagrid) as pretrained classification and detection cnns for hand detction and classification tasks. Most of the source code is borrowed from [TorchVision](https://github.com/pytorch/vision) repo.
+This repository contains the source code of models used in [HaGRID](https://github.com/hukenovs/hagrid) as pretrained classification and detection CNNs for hand detection and classification tasks. Most of the source code is borrowed from [TorchVision](https://github.com/pytorch/vision) repo.
 
 ### List of models:
 * Classification:
