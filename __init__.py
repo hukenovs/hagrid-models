@@ -1,3 +1,1 @@
-from .classifiers.resnet import *
-from .classifiers.mobilenet import *
-from .classifiers.vision_transformer import *
+from .get_model import get_model

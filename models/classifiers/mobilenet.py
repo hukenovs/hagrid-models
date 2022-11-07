@@ -367,7 +367,7 @@ def _mobilenet_v3_conf(
     bneck_conf = partial(InvertedResidualConfig, width_mult=width_mult)
     adjust_channels = partial(InvertedResidualConfig.adjust_channels, width_mult=width_mult)
 
-    if arch == "mobilenet_v3_large":
+    if arch == "mobilenetv3_large":
         inverted_residual_setting = [
             bneck_conf(16, 3, 16, 16, False, "RE", 1, 1),
             bneck_conf(16, 3, 64, 24, False, "RE", 2, 1),  # C1
@@ -386,7 +386,7 @@ def _mobilenet_v3_conf(
             bneck_conf(160 // reduce_divider, 5, 960 // reduce_divider, 160 // reduce_divider, True, "HS", 1, dilation),
         ]
         last_channel = adjust_channels(1280 // reduce_divider)  # C5
-    elif arch == "mobilenet_v3_small":
+    elif arch == "mobilenetv3_small":
         inverted_residual_setting = [
             bneck_conf(16, 3, 16, 16, True, "RE", 2, 1),  # C1
             bneck_conf(16, 3, 72, 24, False, "RE", 2, 1),  # C2
@@ -408,23 +408,15 @@ def _mobilenet_v3_conf(
 
 
 def _mobilenet_v3(
-    arch: str,
     inverted_residual_setting: List[InvertedResidualConfig],
     last_channel: int,
-    pretrained: bool,
-    progress: bool,
     **kwargs: Any,
 ):
     model = MobileNetV3(inverted_residual_setting, last_channel, **kwargs)
-    # if pretrained:
-        # if model_urls.get(arch, None) is None:
-        #     raise ValueError(f"No checkpoint is available for model type {arch}")
-        # state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
-        # model.load_state_dict(state_dict)
     return model
 
 
-def mobilenet_v3_large(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> MobileNetV3:
+def mobilenetv3_large(**kwargs: Any) -> MobileNetV3:
     """
     Constructs a large MobileNetV3 architecture from
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
@@ -433,12 +425,12 @@ def mobilenet_v3_large(pretrained: bool = False, progress: bool = True, **kwargs
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    arch = "mobilenet_v3_large"
+    arch = "mobilenetv3_large"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
-    return _mobilenet_v3(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
+    return _mobilenet_v3(inverted_residual_setting, last_channel,  **kwargs)
 
 
-def mobilenet_v3_small(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> MobileNetV3:
+def mobilenetv3_small(**kwargs: Any) -> MobileNetV3:
     """
     Constructs a small MobileNetV3 architecture from
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
@@ -447,6 +439,6 @@ def mobilenet_v3_small(pretrained: bool = False, progress: bool = True, **kwargs
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    arch = "mobilenet_v3_small"
+    arch = "mobilenetv3_small"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
-    return _mobilenet_v3(arch, inverted_residual_setting, last_channel, pretrained, progress, **kwargs)
+    return _mobilenet_v3(inverted_residual_setting, last_channel, **kwargs)

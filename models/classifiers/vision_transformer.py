@@ -338,14 +338,11 @@ class VisionTransformer(nn.Module):
 
 
 def _vision_transformer(
-    arch: str,
     patch_size: int,
     num_layers: int,
     num_heads: int,
     hidden_dim: int,
     mlp_dim: int,
-    pretrained: bool,
-    progress: bool,
     **kwargs: Any,
 ) -> VisionTransformer:
     image_size = kwargs.pop("image_size", 224)
@@ -360,15 +357,9 @@ def _vision_transformer(
         **kwargs,
     )
 
-    # if pretrained:
-        # if arch not in model_urls:
-        #     raise ValueError(f"No checkpoint is available for model type '{arch}'!")
-        # state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
-        # model.load_state_dict(state_dict)
-
     return model
 
-def vit_b_32(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> VisionTransformer:
+def vitb32(**kwargs: Any) -> VisionTransformer:
     """
     Constructs a vit_b_32 architecture from
     `"An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale" <https://arxiv.org/abs/2010.11929>`_.
@@ -378,13 +369,10 @@ def vit_b_32(pretrained: bool = False, progress: bool = True, **kwargs: Any) -> 
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     return _vision_transformer(
-        arch="vit_b_32",
         patch_size=32,
         num_layers=12,
         num_heads=12,
         hidden_dim=768,
         mlp_dim=3072,
-        pretrained=pretrained,
-        progress=progress,
         **kwargs,
     )
