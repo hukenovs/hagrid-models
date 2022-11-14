@@ -2,4 +2,4 @@ from .classifiers.resnet import *
 from .classifiers.mobilenet import *
 from .classifiers.vision_transformer import *
 
-#TODO: add classificaion models from model zoo
+#TODO: add classificaion and detection models from model zoo
