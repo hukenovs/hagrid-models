@@ -1,8 +1,8 @@
 import os
 from functools import singledispatch
-from model_zoo import models
-from onnx_model import ONNXModel
-from pytorch_model import PytorchModel
+from hagrid_models.model_zoo import models
+from hagrid_models.onnx_model import ONNXModel
+from hagrid_models.pytorch_model import pytorch_model
 import requests
 from tqdm.auto import tqdm
 
@@ -51,7 +51,7 @@ def _(model: PATH):
     if '.onnx' in model:
         return ONNXModel(model)
     elif '.pth' in model or '.pt' in model:
-        return PytorchModel(checkpoint=model)
+        return pytorch_model(checkpoint=model)
     else:
         raise ValueError(f"Checkpoint {model} not supported.")
 
@@ -64,7 +64,8 @@ def _(model: Name, progress: bool):
     return model
 
 
-def get_model(model: str, progress: bool = True, pretrained: bool = True, **kwargs):
+
+def get_model(model: str, progress: bool = True, pretrained: bool = True, device: str = None, **kwargs):
     if pretrained:
         if "https" in model and model in models.values():
             model = _get_model(URL(model), progress)
@@ -76,7 +77,7 @@ def get_model(model: str, progress: bool = True, pretrained: bool = True, **kwar
             raise ValueError(f"Model {model} not found.")
     else:
         if model in models.keys():
-            return PytorchModel(model_name=model)
+            return pytorch_model(model_name=model)
         else:
             raise ValueError(f"Model {model} not found.")
 
@@ -85,4 +86,4 @@ def get_model(model: str, progress: bool = True, pretrained: bool = True, **kwar
 
 if __name__ == "__main__":
     out = get_model('SwinT_FasterRCNN')
-    print(out)
+    print(type(out).__name__)
