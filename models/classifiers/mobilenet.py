@@ -1,10 +1,12 @@
 import warnings
+import torch
+
+from torch import nn, Tensor
+
 from functools import partial
 from typing import Any, Callable, List, Optional, Sequence
 
-import torch
-from torch import nn, Tensor
-from types import FunctionType
+from utils.torch_utils import _log_api_usage_once
 
 def _make_divisible(v: float, divisor: int, min_value: Optional[int] = None) -> int:
     """
@@ -20,31 +22,6 @@ def _make_divisible(v: float, divisor: int, min_value: Optional[int] = None) -> 
     if new_v < 0.9 * v:
         new_v += divisor
     return new_v
-
-def _log_api_usage_once(obj: Any) -> None:
-
-    """
-    Logs API usage(module and name) within an organization.
-    In a large ecosystem, it's often useful to track the PyTorch and
-    TorchVision APIs usage. This API provides the similar functionality to the
-    logging module in the Python stdlib. It can be used for debugging purpose
-    to log which methods are used and by default it is inactive, unless the user
-    manually subscribes a logger via the `SetAPIUsageLogger method <https://github.com/pytorch/pytorch/blob/eb3b9fe719b21fae13c7a7cf3253f970290a573e/c10/util/Logging.cpp#L114>`_.
-    Please note it is triggered only once for the same API call within a process.
-    It does not collect any data from open-source users since it is no-op by default.
-    For more information, please refer to
-    * PyTorch note: https://pytorch.org/docs/stable/notes/large_scale_deployments.html#api-usage-logging;
-    * Logging policy: https://github.com/pytorch/vision/issues/5052;
-
-    Args:
-        obj (class instance or method): an object to extract info from.
-    """
-    if not obj.__module__.startswith("torchvision"):
-        return
-    name = obj.__class__.__name__
-    if isinstance(obj, FunctionType):
-        name = obj.__name__
-    torch._C._log_api_usage_once(f"{obj.__module__}.{name}")
 
 class ConvNormActivation(torch.nn.Sequential):
     """
@@ -325,11 +302,19 @@ class MobileNetV3(nn.Module):
 
         self.features = nn.Sequential(*layers)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
-        self.classifier = nn.Sequential(
-            nn.Linear(lastconv_output_channels, last_channel),
-            nn.Hardswish(inplace=True),
-            nn.Dropout(p=dropout, inplace=True),
-            nn.Linear(last_channel, num_classes),
+
+        self.gesture_classifier = nn.Sequential(
+            nn.Linear(in_features=lastconv_output_channels, out_features=last_channel),
+            nn.Hardswish(),
+            nn.Dropout(p=0.2, inplace=True),
+            nn.Linear(in_features=last_channel, out_features=num_classes),
+        )
+
+        self.leading_hand_classifier = nn.Sequential(
+            nn.Linear(in_features=lastconv_output_channels, out_features=last_channel),
+            nn.Hardswish(),
+            nn.Dropout(p=0.2, inplace=True),
+            nn.Linear(in_features=last_channel, out_features=2),
         )
 
         for m in self.modules():
@@ -350,9 +335,12 @@ class MobileNetV3(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
 
-        x = self.classifier(x)
+        gesture = self.gesture_classifier(x)
 
-        return x
+        leading_hand = self.leading_hand_classifier(x)
+
+        return {"gesture": gesture, "leading_hand": leading_hand}
+
 
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
@@ -422,7 +410,6 @@ def mobilenetv3_large(**kwargs: Any) -> MobileNetV3:
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
 
     Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     arch = "mobilenetv3_large"
@@ -436,7 +423,6 @@ def mobilenetv3_small(**kwargs: Any) -> MobileNetV3:
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
 
     Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     arch = "mobilenetv3_small"

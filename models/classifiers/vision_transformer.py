@@ -1,36 +1,13 @@
 import math
+
+import torch
+import torch.nn as nn
+
 from collections import OrderedDict
 from functools import partial
 from typing import Any, Callable, List, NamedTuple, Optional
 
-import torch
-import torch.nn as nn
-from types import FunctionType
-
-def _log_api_usage_once(obj: Any) -> None:
-
-    """
-    Logs API usage(module and name) within an organization.
-    In a large ecosystem, it's often useful to track the PyTorch and
-    TorchVision APIs usage. This API provides the similar functionality to the
-    logging module in the Python stdlib. It can be used for debugging purpose
-    to log which methods are used and by default it is inactive, unless the user
-    manually subscribes a logger via the `SetAPIUsageLogger method <https://github.com/pytorch/pytorch/blob/eb3b9fe719b21fae13c7a7cf3253f970290a573e/c10/util/Logging.cpp#L114>`_.
-    Please note it is triggered only once for the same API call within a process.
-    It does not collect any data from open-source users since it is no-op by default.
-    For more information, please refer to
-    * PyTorch note: https://pytorch.org/docs/stable/notes/large_scale_deployments.html#api-usage-logging;
-    * Logging policy: https://github.com/pytorch/vision/issues/5052;
-
-    Args:
-        obj (class instance or method): an object to extract info from.
-    """
-    if not obj.__module__.startswith("torchvision"):
-        return
-    name = obj.__class__.__name__
-    if isinstance(obj, FunctionType):
-        name = obj.__name__
-    torch._C._log_api_usage_once(f"{obj.__module__}.{name}")
+from utils.torch_utils import _log_api_usage_once
 
 class ConvNormActivation(torch.nn.Sequential):
     """
@@ -264,15 +241,13 @@ class VisionTransformer(nn.Module):
         )
         self.seq_length = seq_length
 
-        heads_layers: OrderedDict[str, nn.Module] = OrderedDict()
-        if representation_size is None:
-            heads_layers["head"] = nn.Linear(hidden_dim, num_classes)
-        else:
-            heads_layers["pre_logits"] = nn.Linear(hidden_dim, representation_size)
-            heads_layers["act"] = nn.Tanh()
-            heads_layers["head"] = nn.Linear(representation_size, num_classes)
+        self.gesture_classifier = nn.Sequential(
+            nn.Linear(in_features=768, out_features=19)
+        )
 
-        self.heads = nn.Sequential(heads_layers)
+        self.leading_hand_classifier = nn.Sequential(
+            nn.Linear(in_features=768, out_features=2)
+        )
 
         if isinstance(self.conv_proj, nn.Conv2d):
             # Init the patchify stem
@@ -288,14 +263,13 @@ class VisionTransformer(nn.Module):
             if self.conv_proj.conv_last.bias is not None:
                 nn.init.zeros_(self.conv_proj.conv_last.bias)
 
-        if hasattr(self.heads, "pre_logits") and isinstance(self.heads.pre_logits, nn.Linear):
-            fan_in = self.heads.pre_logits.in_features
-            nn.init.trunc_normal_(self.heads.pre_logits.weight, std=math.sqrt(1 / fan_in))
-            nn.init.zeros_(self.heads.pre_logits.bias)
+        if isinstance(self.gesture_classifier, nn.Linear):
+            nn.init.zeros_(self.gesture_classifier.weight)
+            nn.init.zeros_(self.gesture_classifier.bias)
 
-        if isinstance(self.heads.head, nn.Linear):
-            nn.init.zeros_(self.heads.head.weight)
-            nn.init.zeros_(self.heads.head.bias)
+        if isinstance(self.leading_hand_classifier, nn.Linear):
+            nn.init.zeros_(self.leading_hand_classifier.weight)
+            nn.init.zeros_(self.leading_hand_classifier.bias)
 
     def _process_input(self, x: torch.Tensor) -> torch.Tensor:
         n, c, h, w = x.shape
@@ -332,9 +306,11 @@ class VisionTransformer(nn.Module):
         # Classifier "token" as used by standard language architectures
         x = x[:, 0]
 
-        x = self.heads(x)
+        gesture = self.gesture_classifier(x)
 
-        return x
+        leading_hand = self.leading_hand_classifier(x)
+
+        return {"gesture": gesture, "leading_hand": leading_hand}
 
 
 def _vision_transformer(
