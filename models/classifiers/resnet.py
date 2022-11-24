@@ -1,10 +1,11 @@
+from typing import Any, Callable, List, Optional, Type, Union
+
 import torch
 import torch.nn as nn
-
 from torch import Tensor
-from typing import Type, Any, Callable, Union, List, Optional
 
-from utils.torch_utils import _log_api_usage_once
+from hagrid_models.utils.torch_utils import _log_api_usage_once
+
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
@@ -131,6 +132,7 @@ class Bottleneck(nn.Module):
 
         return out
 
+
 class ResNet(nn.Module):
     def __init__(
         self,
@@ -176,7 +178,6 @@ class ResNet(nn.Module):
 
         self.classifier = nn.Sequential(
             nn.Linear(512 * block.expansion, num_classes),
-
         )
         self.leading_hand = nn.Sequential(
             nn.Linear(512 * block.expansion, 2),
@@ -242,7 +243,7 @@ class ResNet(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Tensor:
         # See note [TorchScript super()]
-        x = self.conv1(x)
+        self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
@@ -259,17 +260,34 @@ class ResNet(nn.Module):
 
         leading_hand = self.leading_hand(x)
 
-        return {'gesture': gesture, 'leading_hand': leading_hand}
+        return {"gesture": gesture, "leading_hand": leading_hand}
 
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
 
+
 def _resnet(
     block: Type[Union[BasicBlock, Bottleneck]],
     layers: List[int],
+    freezed: bool = False,
     **kwargs: Any,
 ) -> ResNet:
     model = ResNet(block, layers, **kwargs)
+
+    if freezed:
+        for module in [
+            model.conv1,
+            model.bn1,
+            model.relu,
+            model.maxpool,
+            model.layer1,
+            model.layer2,
+            model.layer3,
+            model.layer4,
+        ]:
+            for param in module:
+                param.requires_grad = False
+
     return model
 
 
@@ -325,5 +343,4 @@ def resnext101(**kwargs: Any) -> ResNet:
     """
     kwargs["groups"] = 32
     kwargs["width_per_group"] = 8
-    return _resnet(Bottleneck, [3, 4, 23, 3],**kwargs)
-
+    return _resnet(Bottleneck, [3, 4, 23, 3], **kwargs)

@@ -1,13 +1,13 @@
 import math
-
-import torch
-import torch.nn as nn
-
 from collections import OrderedDict
 from functools import partial
 from typing import Any, Callable, List, NamedTuple, Optional
 
-from utils.torch_utils import _log_api_usage_once
+import torch
+import torch.nn as nn
+
+from hagrid_models.utils.torch_utils import _log_api_usage_once
+
 
 class ConvNormActivation(torch.nn.Sequential):
     """
@@ -66,6 +66,7 @@ class ConvNormActivation(torch.nn.Sequential):
         super().__init__(*layers)
         _log_api_usage_once(self)
         self.out_channels = out_channels
+
 
 class ConvStemConfig(NamedTuple):
     out_channels: int
@@ -241,13 +242,9 @@ class VisionTransformer(nn.Module):
         )
         self.seq_length = seq_length
 
-        self.gesture_classifier = nn.Sequential(
-            nn.Linear(in_features=768, out_features=19)
-        )
+        self.gesture_classifier = nn.Sequential(nn.Linear(in_features=768, out_features=19))
 
-        self.leading_hand_classifier = nn.Sequential(
-            nn.Linear(in_features=768, out_features=2)
-        )
+        self.leading_hand_classifier = nn.Sequential(nn.Linear(in_features=768, out_features=2))
 
         if isinstance(self.conv_proj, nn.Conv2d):
             # Init the patchify stem
@@ -319,6 +316,7 @@ def _vision_transformer(
     num_heads: int,
     hidden_dim: int,
     mlp_dim: int,
+    freezed: bool = False,
     **kwargs: Any,
 ) -> VisionTransformer:
     image_size = kwargs.pop("image_size", 224)
@@ -333,7 +331,12 @@ def _vision_transformer(
         **kwargs,
     )
 
+    if freezed:
+        for param in model.encoder.parameters():
+            param.requires_grad = False
+
     return model
+
 
 def vitb32(**kwargs: Any) -> VisionTransformer:
     """

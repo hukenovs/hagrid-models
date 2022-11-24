@@ -1,12 +1,12 @@
 import warnings
-import torch
-
-from torch import nn, Tensor
-
 from functools import partial
 from typing import Any, Callable, List, Optional, Sequence
 
-from utils.torch_utils import _log_api_usage_once
+import torch
+from torch import Tensor, nn
+
+from hagrid_models.utils.torch_utils import _log_api_usage_once
+
 
 def _make_divisible(v: float, divisor: int, min_value: Optional[int] = None) -> int:
     """
@@ -22,6 +22,7 @@ def _make_divisible(v: float, divisor: int, min_value: Optional[int] = None) -> 
     if new_v < 0.9 * v:
         new_v += divisor
     return new_v
+
 
 class ConvNormActivation(torch.nn.Sequential):
     """
@@ -306,14 +307,14 @@ class MobileNetV3(nn.Module):
         self.gesture_classifier = nn.Sequential(
             nn.Linear(in_features=lastconv_output_channels, out_features=last_channel),
             nn.Hardswish(),
-            nn.Dropout(p=0.2, inplace=True),
+            nn.Dropout(p=dropout, inplace=True),
             nn.Linear(in_features=last_channel, out_features=num_classes),
         )
 
         self.leading_hand_classifier = nn.Sequential(
             nn.Linear(in_features=lastconv_output_channels, out_features=last_channel),
             nn.Hardswish(),
-            nn.Dropout(p=0.2, inplace=True),
+            nn.Dropout(p=dropout, inplace=True),
             nn.Linear(in_features=last_channel, out_features=2),
         )
 
@@ -340,7 +341,6 @@ class MobileNetV3(nn.Module):
         leading_hand = self.leading_hand_classifier(x)
 
         return {"gesture": gesture, "leading_hand": leading_hand}
-
 
     def forward(self, x: Tensor) -> Tensor:
         return self._forward_impl(x)
@@ -398,9 +398,15 @@ def _mobilenet_v3_conf(
 def _mobilenet_v3(
     inverted_residual_setting: List[InvertedResidualConfig],
     last_channel: int,
+    freezed: bool = False,
     **kwargs: Any,
 ):
     model = MobileNetV3(inverted_residual_setting, last_channel, **kwargs)
+
+    if freezed:
+        for param in model.features.parameters():
+            param.requires_grad = False
+
     return model
 
 
@@ -414,7 +420,7 @@ def mobilenetv3_large(**kwargs: Any) -> MobileNetV3:
     """
     arch = "mobilenetv3_large"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
-    return _mobilenet_v3(inverted_residual_setting, last_channel,  **kwargs)
+    return _mobilenet_v3(inverted_residual_setting, last_channel, **kwargs)
 
 
 def mobilenetv3_small(**kwargs: Any) -> MobileNetV3:
