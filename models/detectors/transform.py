@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
 
-from hagrid_models.models.detectors.anchor_utils import ImageList
+from ..detectors.anchor_utils import ImageList
 
 
 def _is_tracing():

@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Sequence
 import torch
 from torch import Tensor, nn
 
-from hagrid_models.utils.torch_utils import _log_api_usage_once
+from ...utils.torch_utils import _log_api_usage_once
 
 
 def _make_divisible(v: float, divisor: int, min_value: Optional[int] = None) -> int:

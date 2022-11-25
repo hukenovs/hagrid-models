@@ -3,8 +3,8 @@ from typing import Tuple
 import torch
 from torch import Tensor
 
-from hagrid_models.models.detectors.transform import _is_tracing
-from hagrid_models.utils.torch_utils import _log_api_usage_once
+from ...utils.torch_utils import _log_api_usage_once
+from ..detectors.transform import _is_tracing
 
 
 def _upcast(t: Tensor) -> Tensor:

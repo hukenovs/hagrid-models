@@ -6,11 +6,11 @@ from typing import Any, Callable, Dict, List, Optional
 import torch
 from torch import Tensor, nn
 
-from hagrid_models.models.classifiers import mobilenet
-from hagrid_models.models.detectors import det_utils
-from hagrid_models.models.detectors.anchor_utils import DefaultBoxGenerator
-from hagrid_models.models.detectors.ssd import SSD, SSDScoringHead
-from hagrid_models.utils.torch_utils import _log_api_usage_once
+from ...utils.torch_utils import _log_api_usage_once
+from ..classifiers import mobilenet
+from ..detectors import det_utils
+from ..detectors.anchor_utils import DefaultBoxGenerator
+from ..detectors.ssd import SSD, SSDScoringHead
 
 
 def _validate_trainable_layers(

@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from hagrid_models.utils.torch_utils import _log_api_usage_once
+from ...utils.torch_utils import _log_api_usage_once
 
 
 class ConvNormActivation(torch.nn.Sequential):

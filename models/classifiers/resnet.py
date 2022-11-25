@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from hagrid_models.utils.torch_utils import _log_api_usage_once
+from ...utils.torch_utils import _log_api_usage_once
 
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:

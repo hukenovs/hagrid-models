@@ -5,12 +5,11 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
 
-import hagrid_models.models.detectors.bbox_ops as box_ops
-from hagrid_models.models.detectors import det_utils
-from hagrid_models.models.detectors.anchor_utils import DefaultBoxGenerator
-from hagrid_models.models.detectors.transform import GeneralizedRCNNTransform
-from hagrid_models.utils.torch_utils import _log_api_usage_once
-
+from ...utils.torch_utils import _log_api_usage_once
+from ..detectors import bbox_ops as box_ops
+from ..detectors import det_utils
+from ..detectors.anchor_utils import DefaultBoxGenerator
+from ..detectors.transform import GeneralizedRCNNTransform
 from .anchor_utils import ImageList
 
 

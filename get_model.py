@@ -5,9 +5,9 @@ from typing import Any
 import requests
 from tqdm.auto import tqdm
 
-from hagrid_models.model_zoo import models
-from hagrid_models.onnx_model import ONNXModel
-from hagrid_models.pytorch_model import pytorch_model
+from .model_zoo import models
+from .onnx_model import ONNXModel
+from .pytorch_model import pytorch_model
 
 __all__ = ["get_model"]
 
