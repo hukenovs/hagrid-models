@@ -9,5 +9,5 @@ models = {
     "MobileNetV3_small": "https://sc.link/XVEg",
     "MobileNetV3_large": "https://sc.link/YXG2",
     "Vitb32": "https://sc.link/XV4g"
-    #TODO: add classificaion models
+    # TODO: add classificaion models
 }

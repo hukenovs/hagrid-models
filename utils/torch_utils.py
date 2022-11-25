@@ -1,5 +1,8 @@
-from typing import Any
 from types import FunctionType
+from typing import Any
+
+import torch
+
 
 def _log_api_usage_once(obj: Any) -> None:
 
