@@ -340,7 +340,6 @@ def ssdlite(
         backbone,
         anchor_generator,
         size,
-        num_classes,
         head=SSDLiteHead(out_channels, num_anchors, num_classes, norm_layer),
         **kwargs,
     )

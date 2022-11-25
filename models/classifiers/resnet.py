@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union
 
 import torch
 import torch.nn as nn
@@ -56,7 +56,7 @@ class BasicBlock(nn.Module):
         self.downsample = downsample
         self.stride = stride
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor):
         identity = x
 
         out = self.conv1(x)
@@ -241,7 +241,7 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def _forward_impl(self, x: Tensor) -> Tensor:
+    def _forward_impl(self, x: Tensor) -> Dict[str, Tensor]:
         # See note [TorchScript super()]
         self.conv1(x)
         x = self.bn1(x)
@@ -262,7 +262,7 @@ class ResNet(nn.Module):
 
         return {"gesture": gesture, "leading_hand": leading_hand}
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> Dict[str, Tensor]:
         return self._forward_impl(x)
 
 

@@ -126,7 +126,6 @@ class SSD(nn.Module):
             set of feature maps.
         size (Tuple[int, int]): the width and height to which images will be rescaled before feeding them
             to the backbone.
-        num_classes (int): number of output classes of the model (including the background).
         image_mean (Tuple[float, float, float]): mean values used for input normalization.
             They are generally the mean values of the dataset on which the backbone has been trained
             on
@@ -155,7 +154,6 @@ class SSD(nn.Module):
         backbone: nn.Module,
         anchor_generator: DefaultBoxGenerator,
         size: Tuple[int, int],
-        num_classes: int,
         image_mean: Optional[List[float]] = None,
         image_std: Optional[List[float]] = None,
         head: Optional[nn.Module] = None,
@@ -197,15 +195,15 @@ class SSD(nn.Module):
         self._has_warned = False
 
     @torch.jit.unused
-    def eager_outputs(self, detections: List[Dict[str, Tensor]], head_outputs, anchors):
+    def eager_outputs(
+        self, detections: List[Dict[str, Tensor]], head_outputs: Dict[str, Tensor], anchors: List[Tensor]
+    ) -> Tuple[Tuple[List[Dict[str, Tensor]], Dict[str, Tensor], List[Tensor]], List[Dict[str, Tensor]]]:
         if self.training:
             return detections, head_outputs, anchors
 
         return detections
 
-    def forward(
-        self, images: List[Tensor], targets: Optional[List[Dict[str, Tensor]]] = None
-    ) -> Tuple[Dict[str, Tensor], List[Dict[str, Tensor]]]:
+    def forward(self, images: List[Tensor]) -> Tuple[Dict[str, Tensor], List[Dict[str, Tensor]]]:
 
         images = ImageList(images, [list(i.size()[1:]) for i in images])
 

@@ -104,7 +104,7 @@ def clip_boxes_to_image(boxes: Tensor, size: Tuple[int, int]) -> Tensor:
     return clipped_boxes.reshape(boxes.shape)
 
 
-def my_nms(boxes, scores, overlap=0.5, top_k=200):
+def _nms(boxes: Tensor, scores: Tensor, overlap: float = 0.5, top_k: int = 200):
     """Apply non-maximum suppression at test time to avoid detecting too many
     overlapping bounding boxes for a given object.
     Args:
@@ -202,9 +202,7 @@ def nms(boxes: Tensor, scores: Tensor, iou_threshold: float) -> Tensor:
     """
     if not torch.jit.is_scripting() and not torch.jit.is_tracing():
         _log_api_usage_once(nms)
-    # _assert_has_ops()
-    # return torch.ops.torchvision.nms(boxes, scores, iou_threshold)
-    return my_nms(boxes, scores, iou_threshold)
+    return _nms(boxes, scores, iou_threshold)
 
 
 def batched_nms(

@@ -1,10 +1,11 @@
 import math
 from collections import OrderedDict
 from functools import partial
-from typing import Any, Callable, List, NamedTuple, Optional
+from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
 import torch
 import torch.nn as nn
+from torch import Tensor
 
 from hagrid_models.utils.torch_utils import _log_api_usage_once
 
@@ -289,7 +290,7 @@ class VisionTransformer(nn.Module):
 
         return x
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: torch.Tensor) -> Dict[str, Tensor]:
         # Reshape and permute the input tensor
         x = self._process_input(x)
         n = x.shape[0]

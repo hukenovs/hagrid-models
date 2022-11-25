@@ -1,6 +1,6 @@
 import warnings
 from functools import partial
-from typing import Any, Callable, List, Optional, Sequence
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 import torch
 from torch import Tensor, nn
@@ -330,7 +330,7 @@ class MobileNetV3(nn.Module):
                 nn.init.normal_(m.weight, 0, 0.01)
                 nn.init.zeros_(m.bias)
 
-    def _forward_impl(self, x: Tensor) -> Tensor:
+    def _forward_impl(self, x: Tensor) -> Dict[str, Tensor]:
         x = self.features(x)
 
         x = self.avgpool(x)
@@ -342,7 +342,7 @@ class MobileNetV3(nn.Module):
 
         return {"gesture": gesture, "leading_hand": leading_hand}
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> Dict[str, Tensor]:
         return self._forward_impl(x)
 
 
