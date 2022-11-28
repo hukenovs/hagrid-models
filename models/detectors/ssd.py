@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import torch
 import torch.nn.functional as F
@@ -9,7 +9,8 @@ from ...utils.torch_utils import _log_api_usage_once
 from ..detectors import bbox_ops as box_ops
 from ..detectors import det_utils
 from ..detectors.anchor_utils import DefaultBoxGenerator
-from ..detectors.transform import GeneralizedRCNNTransform
+
+# from ..detectors.transform import GeneralizedRCNNTransform
 from .anchor_utils import ImageList
 
 
@@ -180,9 +181,9 @@ class SSD(nn.Module):
             image_mean = [0.485, 0.456, 0.406]
         if image_std is None:
             image_std = [0.229, 0.224, 0.225]
-        self.transform = GeneralizedRCNNTransform(
-            min(size), max(size), image_mean, image_std, size_divisible=1, fixed_size=size
-        )
+        # self.transform = GeneralizedRCNNTransform(
+        #     min(size), max(size), image_mean, image_std, size_divisible=1, fixed_size=size
+        # )
 
         self.score_thresh = score_thresh
         self.nms_thresh = nms_thresh
@@ -196,15 +197,16 @@ class SSD(nn.Module):
     @torch.jit.unused
     def eager_outputs(
         self, detections: List[Dict[str, Tensor]], head_outputs: Dict[str, Tensor], anchors: List[Tensor]
-    ) -> Tuple[Tuple[List[Dict[str, Tensor]], Dict[str, Tensor], List[Tensor]], List[Dict[str, Tensor]]]:
+    ) -> Union[tuple[list[dict[str, Tensor]], dict[str, Tensor], list[Tensor]], list[dict[str, Tensor]]]:
         if self.training:
             return detections, head_outputs, anchors
 
         return detections
 
-    def forward(self, images: List[Tensor]) -> Tuple[Dict[str, Tensor], List[Dict[str, Tensor]]]:
-
-        images = ImageList(images, [list(i.size()[1:]) for i in images])
+    def forward(
+        self, images: Tensor
+    ) -> Union[tuple[list[dict[str, Tensor]], dict[str, Tensor], list[Tensor]], list[dict[str, Tensor]]]:
+        images = ImageList(images, [tuple(i.size()[1:]) for i in images])
 
         features = self.backbone(images.tensors)
         if isinstance(features, torch.Tensor):

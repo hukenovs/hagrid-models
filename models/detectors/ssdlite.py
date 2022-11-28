@@ -306,9 +306,7 @@ def ssdlite(
     if norm_layer is None:
         norm_layer = partial(nn.BatchNorm2d, eps=0.001, momentum=0.03)
 
-    backbone = mobilenet.mobilenetv3_large(
-        pretrained=pretrained_backbone, progress=progress, norm_layer=norm_layer, reduced_tail=reduce_tail, **kwargs
-    )
+    backbone = mobilenet.mobilenetv3_large(norm_layer=norm_layer, reduced_tail=reduce_tail, **kwargs)
     if not pretrained_backbone:
         # Change the default initialization scheme if not pretrained
         _normal_init(backbone)

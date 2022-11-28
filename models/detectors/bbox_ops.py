@@ -104,14 +104,13 @@ def clip_boxes_to_image(boxes: Tensor, size: Tuple[int, int]) -> Tensor:
     return clipped_boxes.reshape(boxes.shape)
 
 
-def _nms(boxes: Tensor, scores: Tensor, overlap: float = 0.5, top_k: int = 200):
+def _nms(boxes: Tensor, scores: Tensor, overlap: float = 0.5):
     """Apply non-maximum suppression at test time to avoid detecting too many
     overlapping bounding boxes for a given object.
     Args:
         boxes: (tensor) The location preds for the img, Shape: [num_priors,4].
         scores: (tensor) The class predscores for the img, Shape:[num_priors].
         overlap: (float) The overlap thresh for suppressing unnecessary boxes.
-        top_k: (int) The Maximum number of box preds to consider.
     Return:
         The indices of the kept boxes with respect to num_priors.
     """
@@ -126,10 +125,6 @@ def _nms(boxes: Tensor, scores: Tensor, overlap: float = 0.5, top_k: int = 200):
     area = torch.mul(x2 - x1, y2 - y1)
     v, idx = scores.sort(0)
 
-    xx1 = boxes.new()
-    yy1 = boxes.new()
-    xx2 = boxes.new()
-    yy2 = boxes.new()
     h = boxes.new()
     w = boxes.new()
 
@@ -169,9 +164,9 @@ def _nms(boxes: Tensor, scores: Tensor, overlap: float = 0.5, top_k: int = 200):
 
         rem_areas = torch.index_select(area, 0, idx)
         union = (rem_areas - inter) + area[i]
-        IoU = inter.float() / union.float()
+        iou = inter.float() / union.float()
 
-        idx = idx[IoU.le(overlap)]
+        idx = idx[iou.le(overlap)]
     return keep
 
 

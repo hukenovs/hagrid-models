@@ -220,12 +220,11 @@ class ResNet(nn.Module):
                 norm_layer(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(
+        layers = [
             block(
                 self.inplanes, planes, stride, downsample, self.groups, self.base_width, previous_dilation, norm_layer
             )
-        )
+        ]
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
             layers.append(
@@ -294,9 +293,6 @@ def _resnet(
 def resnet18(**kwargs: Any) -> ResNet:
     r"""ResNet-18 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
-    Args:
-        progress (bool): If True, displays a progress bar of the download to stderr
     """
     return _resnet(BasicBlock, [2, 2, 2, 2], **kwargs)
 
@@ -304,9 +300,6 @@ def resnet18(**kwargs: Any) -> ResNet:
 def resnet50(**kwargs: Any) -> ResNet:
     r"""ResNet-50 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
-    Args:
-        progress (bool): If True, displays a progress bar of the download to stderr
     """
     return _resnet(Bottleneck, [3, 4, 6, 3], **kwargs)
 
@@ -314,9 +307,6 @@ def resnet50(**kwargs: Any) -> ResNet:
 def resnet152(**kwargs: Any) -> ResNet:
     r"""ResNet-152 model from
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
-
-    Args:
-        progress (bool): If True, displays a progress bar of the download to stderr
     """
     return _resnet(Bottleneck, [3, 8, 36, 3], **kwargs)
 
@@ -324,9 +314,6 @@ def resnet152(**kwargs: Any) -> ResNet:
 def resnext50(**kwargs: Any) -> ResNet:
     r"""ResNeXt-50 32x4d model from
     `"Aggregated Residual Transformation for Deep Neural Networks" <https://arxiv.org/pdf/1611.05431.pdf>`_.
-
-    Args:
-        progress (bool): If True, displays a progress bar of the download to stderr
     """
     kwargs["groups"] = 32
     kwargs["width_per_group"] = 4
@@ -336,10 +323,6 @@ def resnext50(**kwargs: Any) -> ResNet:
 def resnext101(**kwargs: Any) -> ResNet:
     r"""ResNeXt-101 32x8d model from
     `"Aggregated Residual Transformation for Deep Neural Networks" <https://arxiv.org/pdf/1611.05431.pdf>`_.
-
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-        progress (bool): If True, displays a progress bar of the download to stderr
     """
     kwargs["groups"] = 32
     kwargs["width_per_group"] = 8

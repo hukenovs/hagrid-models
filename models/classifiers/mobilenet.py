@@ -414,9 +414,6 @@ def mobilenetv3_large(**kwargs: Any) -> MobileNetV3:
     """
     Constructs a large MobileNetV3 architecture from
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
-
-    Args:
-        progress (bool): If True, displays a progress bar of the download to stderr
     """
     arch = "mobilenetv3_large"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
@@ -427,9 +424,6 @@ def mobilenetv3_small(**kwargs: Any) -> MobileNetV3:
     """
     Constructs a small MobileNetV3 architecture from
     `"Searching for MobileNetV3" <https://arxiv.org/abs/1905.02244>`_.
-
-    Args:
-        progress (bool): If True, displays a progress bar of the download to stderr
     """
     arch = "mobilenetv3_small"
     inverted_residual_setting, last_channel = _mobilenet_v3_conf(arch, **kwargs)
