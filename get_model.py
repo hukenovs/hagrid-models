@@ -39,7 +39,7 @@ def _(model: URL, progress: bool, **kwargs: Any):
     file_size = int(response.headers.get("content-length", 0))
     filename = os.path.join(model_storage, url.split("/")[-1])
     if os.path.exists(filename):
-        return _get_model(PATH(filename))
+        return _get_model(PATH(filename), **kwargs)
     progress_bar = tqdm(total=file_size, unit="iB", unit_scale=True, disable=not progress, desc=url.split("/")[-1])
     block_size = 1024
     with open(filename, "wb") as handle:
@@ -74,12 +74,12 @@ def _(model: Name, progress: bool, **kwargs: Any):
     return model
 
 
-def get_model(model: str, progress: bool = True, pretrained: bool = True, device: str = None, **kwargs: Any):
+def get_model(model: str, progress: bool = True, pretrained: bool = True, **kwargs: Any):
     if pretrained:
         if "https" in model and model in models.values():
             model = _get_model(URL(model), progress, **kwargs)
         elif ".onnx" in model or ".pth" in model or ".pt" in model:
-            model = _get_model(PATH(model), kwargs, **kwargs)
+            model = _get_model(PATH(model), **kwargs)
         elif model in models.keys():
             model = _get_model(Name(model), progress, **kwargs)
         else:
