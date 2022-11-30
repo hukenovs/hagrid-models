@@ -43,4 +43,4 @@ class ONNXModel:
         scores = outputs[0][0][..., -1]
         labels = outputs[1][0]
 
-        return {"boxes": bboxes, "scores": scores, "labels": labels}
+        return [{"boxes": bboxes, "scores": scores, "labels": labels}]

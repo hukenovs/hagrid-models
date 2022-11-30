@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
 import torch.nn.functional as F
@@ -9,8 +9,6 @@ from ...utils.torch_utils import _log_api_usage_once
 from ..detectors import bbox_ops as box_ops
 from ..detectors import det_utils
 from ..detectors.anchor_utils import DefaultBoxGenerator
-
-# from ..detectors.transform import GeneralizedRCNNTransform
 from .anchor_utils import ImageList
 
 
@@ -163,6 +161,7 @@ class SSD(nn.Module):
         iou_thresh: float = 0.5,
         topk_candidates: int = 400,
         positive_fraction: float = 0.25,
+        **kwargs: Any,
     ):
         super().__init__()
         _log_api_usage_once(self)
@@ -197,7 +196,7 @@ class SSD(nn.Module):
     @torch.jit.unused
     def eager_outputs(
         self, detections: List[Dict[str, Tensor]], head_outputs: Dict[str, Tensor], anchors: List[Tensor]
-    ) -> Union[tuple[list[dict[str, Tensor]], dict[str, Tensor], list[Tensor]], list[dict[str, Tensor]]]:
+    ) -> Union[Tuple[List[Dict[str, Tensor]], Dict[str, Tensor], List[Tensor]], List[Dict[str, Tensor]]]:
         if self.training:
             return detections, head_outputs, anchors
 
@@ -205,7 +204,7 @@ class SSD(nn.Module):
 
     def forward(
         self, images: Tensor
-    ) -> Union[tuple[list[dict[str, Tensor]], dict[str, Tensor], list[Tensor]], list[dict[str, Tensor]]]:
+    ) -> Union[Tuple[List[Dict[str, Tensor]], Dict[str, Tensor], List[Tensor]], List[Dict[str, Tensor]]]:
         images = ImageList(images, [tuple(i.size()[1:]) for i in images])
 
         features = self.backbone(images.tensors)

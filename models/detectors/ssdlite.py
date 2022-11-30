@@ -172,7 +172,6 @@ class SSDLiteClassificationHead(SSDScoringHead):
         for channels, anchors in zip(in_channels, num_anchors):
             cls_logits.append(_prediction_block(channels, num_classes * anchors, 3, norm_layer))
         _normal_init(cls_logits)
-        print("num_classes", num_classes)
         super().__init__(cls_logits, num_classes)
 
 
