@@ -10,22 +10,31 @@ This repository contains the source code of models used in [HaGRID](https://gith
     * ResNet
     * Vision Transformer
 * Detection:
-    * FatserRCNN
     * SSDLite
+    * SwinS_FasterRCNN
+    * SwinT_FasterRCNN
+
+List of all available pre-trained models can be found in model_zoo.py
 
 ### Project
 
 ```
 .
-├── detectors/ # source code for detection models
-│   ├── ssd.py # Single Shot Detector
-│   ├── frcnn.py # Faster Rcnn
-├── classifiers/ # source code for classification models
-│   ├── mobilenet.py # MobileNetV3
-│   ├── resnet.py # ResNet
-│   ├── vision_transformer.py # vision transformer
-├── util/ # useful utils
+├── models/
+│   ├── classifiers/ # source code for classification models
+│   │   ├── mobilenet.py # MobileNetV3
+│   │   ├── resnet.py # ResNet
+│   │   ├── vision_transformer.py # Vision Transformer
+│   ├── detectors/ # source code for SSD detection model
+│   │   ├── ssd.py # Single Shot Detector
+│   │   ├── ssdlite.py # SSDLite scoring and regression heads
+        ...
+├── utils/ # useful utils
+│   ├── onnx_utils.py # Utils for ONNX models
+│   ├── torch_utils.py # Utils for pytorch models
+├── get_model.py # Get model method
+├── model_zoo.py # List of pre-trained availeble models
+├── onnx_model.py # ONNX model wrapper
+├── pytorch_model.py # Pytorch model wrapper
+├── processing.py # Pre/post processing methods for images
 ```
-
-
-
