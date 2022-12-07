@@ -4,7 +4,10 @@ import torch
 from torch import Tensor
 
 from ...utils.torch_utils import _log_api_usage_once
-from ..detectors.transform import _is_tracing
+
+
+def _is_tracing():
+    return torch._C._get_tracing_state()
 
 
 def _upcast(t: Tensor) -> Tensor:

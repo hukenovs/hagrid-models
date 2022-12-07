@@ -332,7 +332,7 @@ def ssdlite(
         "image_std": [0.5, 0.5, 0.5],
     }
     kwargs = {**defaults, **kwargs}
-    print("num_classes", num_classes)
+
     model = SSD(
         backbone,
         anchor_generator,
