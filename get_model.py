@@ -68,7 +68,7 @@ def _(model: PATH, **kwargs: Any):
 
 @_get_model.register
 def _(model: Name, progress: bool, **kwargs: Any):
-    model = models[model]
+    model = models.get(model)
     model = _get_model(URL(model), progress, **kwargs)
 
     return model
@@ -91,8 +91,3 @@ def get_model(model: str, progress: bool = True, pretrained: bool = True, **kwar
             raise ValueError(f"Model {model} not found.")
 
     return model
-
-
-if __name__ == "__main__":
-    out = get_model("SwinT_FasterRCNN")
-    print(type(out).__name__)

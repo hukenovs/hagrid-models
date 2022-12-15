@@ -242,7 +242,7 @@ class ResNet(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Dict[str, Tensor]:
         # See note [TorchScript super()]
-        self.conv1(x)
+        x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
@@ -295,6 +295,13 @@ def resnet18(**kwargs: Any) -> ResNet:
     `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
     """
     return _resnet(BasicBlock, [2, 2, 2, 2], **kwargs)
+
+
+def resnet34(**kwargs: Any) -> ResNet:
+    r"""ResNet-34 model from
+    `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_.
+    """
+    return _resnet(BasicBlock, [3, 4, 6, 3], **kwargs)
 
 
 def resnet50(**kwargs: Any) -> ResNet:

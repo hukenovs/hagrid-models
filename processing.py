@@ -15,7 +15,7 @@ def onnx_preprocessing(image: np.ndarray) -> Dict[str, np.array]:
     return {"image": image}
 
 
-def ssdlite_preprocess(img: np.ndarray) -> Tuple[Tensor, Tuple[int, int], Tuple[int, int]]:
+def ssdlite_preprocessing(img: np.ndarray) -> Tuple[Tensor, Tuple[int, int], Tuple[int, int]]:
     """
     Preproc image for model input
 
@@ -66,4 +66,4 @@ def ssdlite_postprocessing(size: Tuple[int, int], padded_size: Tuple[int, int], 
 
 get_postprocess = {"SSD": ssdlite_postprocessing}
 
-get_transform = {"ONNXModel": onnx_preprocessing, "SSD": ssdlite_preprocess}
+get_transform = {"ONNXModel": onnx_preprocessing, "SSD": ssdlite_preprocessing}
