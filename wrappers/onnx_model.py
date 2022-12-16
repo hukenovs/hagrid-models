@@ -1,6 +1,6 @@
 import onnxruntime as ort
 
-from .utils.onnx_utils import get_onnx_provider
+from ..utils.onnx_utils import get_onnx_provider
 
 
 class ONNXModel:

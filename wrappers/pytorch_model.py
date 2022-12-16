@@ -3,7 +3,7 @@ from typing import Any
 
 import torch
 
-from . import models
+from .. import models
 
 
 def pytorch_model(model_name: str = None, checkpoint: str = None, **kwargs: Any):

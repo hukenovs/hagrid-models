@@ -5,7 +5,7 @@ from typing import Any
 import requests
 from tqdm.auto import tqdm
 
-from .model_zoo import models
+from ..models.model_zoo import models
 from .onnx_model import ONNXModel
 from .pytorch_model import pytorch_model
 

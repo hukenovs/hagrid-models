@@ -28,13 +28,14 @@ List of all available pre-trained models can be found in model_zoo.py
 │   ├── detectors/ # source code for SSD detection model
 │   │   ├── ssd.py # Single Shot Detector
 │   │   ├── ssdlite.py # SSDLite scoring and regression heads
+│   ├── model_zoo.py # List of pre-trained availeble models
         ...
 ├── utils/ # useful utils
 │   ├── onnx_utils.py # Utils for ONNX models
 │   ├── torch_utils.py # Utils for pytorch models
-├── get_model.py # Get model method
-├── model_zoo.py # List of pre-trained availeble models
-├── onnx_model.py # ONNX model wrapper
-├── pytorch_model.py # Pytorch model wrapper
-├── processing.py # Pre/post processing methods for images
+│   ├── processing.py # Pre/post processing methods for images
+├── wrappers/ # onnx and torch model wrappers
+│   ├── get_model.py # Get model method
+│   ├── onnx_model.py # ONNX model wrapper
+│   ├── pytorch_model.py # Pytorch model wrapper
 ```
